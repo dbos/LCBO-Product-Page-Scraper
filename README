@@ -1,1 +1,2 @@
-Boilerplate Readme
+This Repository contains scripts I've written to parse the printer-friendly version of product pages at lcbo.com
+External dependancies include httplib2 and xlrd
