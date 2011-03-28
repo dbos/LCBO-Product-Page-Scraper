@@ -23,17 +23,17 @@ from wineObject import cspclook
 #I don't want to change anything now though since it seems to work. 
 encod="ISO-8859-1"
 
-x=wineObject.wineObjectClass(cspclook(sys.argv[-1]).decode(encod),int(sys.argv[-1]))
-a=[x.name.encode(encod),
+x=wineObject.wineObjectClass(cspclook(sys.argv[-1]),int(sys.argv[-1]))
+a=[x.name,
 		x.cspc,x.price,
-		x.ptype.encode(encod),
+		x.ptype,
 		x.sugar,x.bottlesize,
-		x.country.encode(encod),
-		x.producer.encode(encod),
+		x.country,
+		x.producer,
 		x.save,
 		x.airmiles,
 		x.until,
 		x.VQA,
-		x.description.encode(encod),
-		x.alcohol.encode(encod)]
-print ("|".join(map(str,a)))
+		x.description,
+		x.alcohol]
+print ("|".join(map(unicode,a)))

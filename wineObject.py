@@ -31,16 +31,15 @@
 import re
 import httplib2
 h=httplib2.Http('.cache')
-encod="ISO-8859-1"
+encoding="iso-8859-1"
 def cspclook(txt,):
     url = 'http://www.lcbo.com/lcbo-ear/lcbo/product/printerFriendly.do?language=EN&itemNumber='+txt
     response, content = h.request(url)
     return content
 class wineObjectClass:
     def __init__(self,instream,rawcspc):
-        self.encoding="ISO-8859-1"
-        self.description=""
-        self.inp=instream
+	self.description=""
+        self.inp=unicode(instream.decode(encoding))
         #The point of datasplit is to break the html up into segments divided by <br> tags. 
 	#Between the appropriately numbered <br> tag lies useful data, as the regex's below all use
 	self.datasplit=re.findall('(.*?)<br>',self.inp, re.MULTILINE | re.IGNORECASE | re.DOTALL)
@@ -55,17 +54,17 @@ class wineObjectClass:
     # and for text after the | character (which is bottle size) note that this is just how the 
     # releaser is formatted. Like the other regex's it depends on how the LCBO lists products.
         if prog.search(txtlist[1].strip()) is None:
-            self.releaser="notfound"
-            self.name="notfound"
+            self.releaser=""
+            self.name=""
             #self.cspc="notfound"
-            self.bottlesize="notfound"
-            self.country="notfound"
-            self.producer="notfound"
+            self.bottlesize=""
+            self.country=""
+            self.producer=""
             self.save=0
             self.airmiles=0
-            self.until="unknown"
-            self.typesubtype="notfound"
-            self.ptype="notfound"
+            self.until=""
+            self.typesubtype=""
+            self.ptype=""
             self.sugar=""
             self.alcohol=""
             self.VQA=0

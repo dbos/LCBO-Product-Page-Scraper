@@ -3,50 +3,60 @@
 #
 #Depends:MySQLdb
 #
-#Description: A short little script that stores most of the data (in MySQL) from
+#Description: A short little script that stores most of the data (in SQLite) from
 #	the lcbo product pages for each CSPC listed in activeproducts.txt
-#Usage: Call from command line with mysql user, password, and db as arguments
-#	eg: python lcbomirror.py fred luckypass mydb
+#Usage: Call from command line. Output database is lcbomirror.db
+#Input file format: The input file is a file called "activeproducts.txt" which is
+#	just a file with CSPCs seperated by line breaks. Leading 0s don't matter.
+#	One could obtain this file with:
+#		cat activeproductsXX.dat | cut -c 1-7 > activeproducts.txt
 #################################################################################
 
+num_lines = sum(1 for line in open('activeproducts.txt'));
 f=open('activeproducts.txt','r');
 g=open('done.log','w');
 import sys
-if len(sys.argv) != 3:
-	sys.stderr.write('Usage: python lcbomirror.py <user> <pass> <db> (with no brackets)')
-import MySQLdb
-conn=MySQLdb.connect(
-		host = "localhost",
-		user = sys.argv[1],
-		passwd = sys.argv[2],
-		db = sys.argv[3])
+import sqlite3 
+conn=sqlite3.connect('lcbomirror.db')
 cursor=conn.cursor()
+cursor.execute("""DROP TABLE lcbo_productlist""")
+conn.commit()
+cursor.execute("""CREATE TABLE lcbo_productlist (cspc,name,producer,price,country,ptype,releasaer,save,airmiles,until,sugar,alcohol,vqa,bottlesize,releasedate,description)""")
 
-#Nothing really of interest except MySQL cursor usage maybe for reference
+#Nothing really of interest except SQLite cursor usage maybe for reference
 #All the real magic is in wineObject.py
 
 import wineObject
 from wineObject import cspclook
+count=0;
 for line in f:
+	count+=1
 	tempcspc=line.strip().lstrip('0');
-	print tempcspc
+	print str(count)+"  /  "+str(num_lines)+"  =  "+str(round(100*float(count)/float(num_lines),2))+"% completed";
 	x=wineObject.wineObjectClass(cspclook(tempcspc),tempcspc)
-        cursor.execute ("INSERT INTO lcbo_productlist VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)",
-			(int(tempcspc),
-			str(x.name),
-			str(x.producer),
-			float(x.price),
-			str(x.country),
-			str(x.ptype),
-			str(x.releaser),
-			float(x.save),
-			float(x.airmiles),
-			str(x.until),
-			str(x.sugar),
-			str(x.alcohol),
-			str(x.VQA),
-			str(x.bottlesize),
-			str(x.releasedate)))
-	g.write(str(tempcspc)+"\n")
+	if (x.name != "unknown"):
+		cursor.execute("INSERT INTO lcbo_productlist VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+				(tempcspc,
+			x.name,
+			x.producer,
+			x.price,
+			x.country,
+			x.ptype,
+			x.releaser,
+			x.save,
+			x.airmiles,
+			x.until,
+			x.sugar,
+			x.alcohol,
+			x.VQA,
+			x.bottlesize,
+			x.releasedate,
+			x.description))
+		g.write(str(tempcspc)+"\n")
+#Commits every 100 records, or when finished
+	if (count % 100 == 0):
+		conn.commit()
+
+conn.commit()
 f.close();
 cursor.close()

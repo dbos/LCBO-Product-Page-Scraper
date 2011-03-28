@@ -1,2 +1,6 @@
+activeproducts*
+lcbomirror.db
 *.pyc
 data/
+.cache
+done.log
