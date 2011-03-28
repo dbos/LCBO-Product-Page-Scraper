@@ -34,7 +34,7 @@ for line in f:
 	tempcspc=line.strip().lstrip('0');
 	print str(count)+"  /  "+str(num_lines)+"  =  "+str(round(100*float(count)/float(num_lines),2))+"% completed";
 	x=wineObject.wineObjectClass(cspclook(tempcspc),tempcspc)
-	if (x.name != "unknown"):
+	if (len(x.name) >1):
 		cursor.execute("INSERT INTO lcbo_productlist VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
 				(tempcspc,
 			x.name,
