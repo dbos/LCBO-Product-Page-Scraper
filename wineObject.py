@@ -14,11 +14,6 @@
 #       print str(x.cspc)+" has product name: "+str(x.name)
 #
 #TODO:
-#	Clean up encoding mess
-#	Better failed lookups than returning fields filled with "unknown"
-#	Remove unused variables from older versions (e.g. psubtype, region)
-#	Some fields (such as "until") run on beyond the data they are
-#		intended for. Make regex more precise
 #	Make it figure out if discount has already been applied to LTOs
 #
 #Other Notes:
@@ -138,6 +133,7 @@ class wineObjectClass:
                 self.airmiles=airmiles.search(self.inp).group(1).strip()
                 self.until=airmiles.search(self.inp).group(2).strip()
 
+
             #TYPESUBTYPE
                  #This is a huge PITA. The block that has the type and subtype
                  #follows either PRICE, LTO, AM, or Both in front, and
@@ -177,7 +173,7 @@ class wineObjectClass:
                 self.sugar=""
             else:
                 self.sugar=prog8.search(self.inp).group(1).strip()
-            prog9=re.compile('Release\ Date:[\ \t\n]*(.*)<br>', re.MULTILINE | re.IGNORECASE | re.DOTALL)
+            prog9=re.compile('Release\ Date:[\ \t\n]*(.*?)<br>', re.MULTILINE | re.IGNORECASE | re.DOTALL)
             if prog9.search(self.inp) is None:
                 self.releasedate="unknown2"
             else:
