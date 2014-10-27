@@ -32,5 +32,6 @@ if not x.fail:
         x.until,
         x.VQA,
         x.description,
-        x.alcohol]
+        x.alcohol,
+        x.image]
     print ("|".join(map(unicode,a)))

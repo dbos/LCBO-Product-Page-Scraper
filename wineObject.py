@@ -22,12 +22,14 @@
 import re
 import httplib2
 from bs4 import BeautifulSoup
-h=httplib2.Http('.cache')
+h=httplib2.Http('/tmp/.cache')
+h.follow_redirects=False
 class wineObjectClass:
     def __init__(self,cspc):
         url = 'http://www.lcbo.com/lcbo/product/cspc/'+cspc
         response, content = h.request(url)
         soup=BeautifulSoup(content.decode('utf8')).find('div',class_='main-content')
+        image=soup.find('div',class_='images').find('img')
         if not soup: 
             self.fail=True
             return None
@@ -64,3 +66,10 @@ class wineObjectClass:
         self.VQA='VQA' if soup.find(text=re.compile('This is a VQA wine')) else ''
         self.description=getTagContents('blockquote')
         self.alcohol=getNextSiblingContents('Alcohol/Vol')
+        h2=httplib2.Http('/tmp/.cache')
+        h2.follow_redirects=False
+        response2, content2 = h.request("http://www.lcbo.com/"+image.get('src'))
+        if response2.status == 200:
+            self.image="http://www.lcbo.com/"+image.get('src')
+        elif response2.status == 302:
+            self.image="http://www.lcbo.com/"+response2['location']
